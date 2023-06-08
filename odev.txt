@@ -1,0 +1,486 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 67,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from pymongo import MongoClient\n",
+    "\n",
+    "client = MongoClient('mongodb+srv://nevingulec32:u3lLHJ3AEBPmlPdu@mongoclass.xj4ccgy.mongodb.net/?retryWrites=true&w=majority"/')\n",
+    "db = client[\"mydatabase\"]\n",
+    "collection = db[\"kisiler\"]"
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Not: Sorulari Mongo querry kodlari kullanarak cozunuz. \n",
+    "\n",
+    "1. fatih isimli kullanicilari bulunuz"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 50,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'name': 'fatih', 'email': 'fatih@gmail.com', 'project': {'python': [99, 98, 97, 95, 87], 'javascript': [78, 75, 77, 75, 73], 'c#': [70, 65, 67, 71, 68]}, 'notlar': [5, 6, 7, 9, 8], 'follower': 525}\n",
+      "{'name': 'fatih', 'email': 'fatih2@gmail.com', 'project': {'python': [], 'javascript': [], 'c#': []}, 'notlar': [9, 10, 8, 7, 9], 'follower': 495}\n"
+     ]
+    }
+   ],
+   "source": [
+    "for i in collection.find({\"name\": \"fatih\"},{\"_id\":0}):\n",
+    "    print(i)"
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "2. fatih isimli ve email adresi fatih@gmail.com olani bul?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'name': 'fatih', 'email': 'fatih@gmail.com', 'project': {'python': [99, 98, 97, 95, 87], 'javascript': [78, 75, 77, 75, 73], 'c#': [70, 65, 67, 71, 68]}, 'notlar': [5, 6, 7, 9, 8], 'follower': 525}\n"
+     ]
+    }
+   ],
+   "source": [
+    "for i in collection.find({\"name\": \"fatih\",\"email\" : \"fatih@gmail.com\"},{\"_id\":0}):\n",
+    "    print(i)"
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "3. isminin bas harfi 's' olan kullanicilari bulunuz"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'name': 'fatih', 'email': 'fatih@gmail.com', 'project': {'python': [99, 98, 97, 95, 87], 'javascript': [78, 75, 77, 75, 73], 'c#': [70, 65, 67, 71, 68]}, 'notlar': [5, 6, 7, 9, 8], 'follower': 525}\n",
+      "{'name': 'fatih', 'email': 'fatih2@gmail.com', 'project': {'python': [], 'javascript': [], 'c#': []}, 'notlar': [9, 10, 8, 7, 9], 'follower': 495}\n"
+     ]
+    }
+   ],
+   "source": [
+    "for i in collection.find({\"name\" :{\"$regex\" : \"^s\"}   } ,{\"_id\":0}):\n",
+    "    print(i)"
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "4. fatih isimli kullanicinin notlarini bulunuz"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'notlar': [5, 6, 7, 9, 8]}\n",
+      "{'notlar': [9, 10, 8, 7, 9]}\n"
+     ]
+    }
+   ],
+   "source": [
+    "for i in collection.find({\"name\": \"fatih\"},{\"_id\":0,\"notlar\" : 1}):\n",
+    "    print(i)"
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "5. \"javascript\" projesinde 80 ile 90 arasında bir nota sahip olan kişileri bulunuz"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 55,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'name': 'ahmet', 'project': {'javascript': [88, 85, 87, 85, 83]}}\n",
+      "{'name': 'ayse', 'project': {'javascript': [78, 85, 85, 93]}}\n",
+      "{'name': 'elif', 'project': {'javascript': [98, 95, 97, 95, 93]}}\n"
+     ]
+    }
+   ],
+   "source": [
+    "for i in collection.find({\"project.javascript\" : {\"$gte\" : 80, \"$lte\" : 90}},{\"_id\":0, \"name\" : 1, \"project.javascript\" :1}):\n",
+    "    print(i)"
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "6. Ayse'nin 77 olan javascript notunu siliniz."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'_id': ObjectId('647f2d1e158e40852479d39d'), 'project': {'javascript': [78, 85, 85, 93]}}\n"
+     ]
+    }
+   ],
+   "source": [
+    "for i in collection.find({\"name\": \"ayse\"},{\"project.javascript\" : 1}):\n",
+    "    print(i)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<pymongo.results.UpdateResult at 0x1ab6f273440>"
+      ]
+     },
+     "execution_count": 29,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "collection.update_one({\"name\": \"ayse\"},{\"$pull\": {\"project.javascript\" : 77}})"
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "7. Kullanicilari email adresleri ile birlikte takipci sayilarina gore siralayaniz"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 37,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'name': 'ayse', 'email': 'ayse@gmail.com', 'follower': 600}\n",
+      "{'name': 'elif', 'email': 'elif@gmail.com', 'follower': 600}\n",
+      "{'name': 'fatih', 'email': 'fatih@gmail.com', 'follower': 525}\n",
+      "{'name': 'fatih', 'email': 'fatih2@gmail.com', 'follower': 495}\n",
+      "{'name': 'ahmet', 'email': 'ahmet@gmail.com', 'follower': 400}\n"
+     ]
+    }
+   ],
+   "source": [
+    "for i in collection.find({},{\"_id\" : 0 ,\"name\" : 1, \"email\" : 1 , \"follower\" : 1}).sort(\"follower\", -1):\n",
+    "    print(i)"
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "8. Takipci sayisi en yuksek 3 kullaniciyi bulunuz"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'name': 'elif', 'email': 'elif@gmail.com', 'follower': 700}\n",
+      "{'name': 'ayse', 'email': 'ayse@gmail.com', 'follower': 600}\n",
+      "{'name': 'fatih', 'email': 'fatih@gmail.com', 'follower': 525}\n"
+     ]
+    }
+   ],
+   "source": [
+    "for i in collection.find({},{\"_id\" : 0 ,\"name\" : 1, \"email\" : 1 , \"follower\" : 1}).sort(\"follower\", -1).limit(3):\n",
+    "    print(i)"
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "9. elifin takipci sayisini 25 arttiriniz?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<pymongo.results.UpdateResult at 0x1f5c2d623c0>"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "collection.update_one({\"name\" : \"elif\"},{\"$inc\" : {\"follower\" : 25}})"
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "10. butun kullanicilarin takipcilerinin ortalamasini bulunuz"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'_id': None, 'averageFollower': 544.0}\n"
+     ]
+    }
+   ],
+   "source": [
+    "for i in collection.aggregate([\n",
+    "\n",
+    "    { \"$group\": { \"_id\": None, \"averageFollower\": { \"$avg\": \"$follower\" } } }\n",
+    "    ]):\n",
+    "    print(i)"
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "11. En dusuk notu olan kullaniciyi bulunuz?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'name': 'ahmet', 'notlar': [4, 7, 3, 6, 4]}\n"
+     ]
+    }
+   ],
+   "source": [
+    "for i in collection.find({},{\"_id\" : 0 ,\"name\" : 1, \"notlar\" : 1}).sort(\"notlar\").limit(1):\n",
+    "    print(i)"
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "12. En yuksek python score notu olan ilk 3 kullaniciyi bulunuz?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 69,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'name': 'ayse', 'project': {'python': [99, 98, 100, 98, 97]}}\n",
+      "{'name': 'fatih', 'project': {'python': [99, 98, 97, 95, 87]}}\n",
+      "{'name': 'ahmet', 'project': {'python': [90, 88, 87, 85, 77]}}\n"
+     ]
+    }
+   ],
+   "source": [
+    "for i in collection.find({},{\"_id\" : 0 ,\"name\" : 1, \"project.python\" : 1}).sort(\"project.python\", -1).limit(3):\n",
+    "    print(i)"
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "13. Kullanicilarin tum proje (python,javascript,c#) skorlarinin ortalamasi en iyi olan 3 kisiyi bulunuz?"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 64,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "{'_id': None, 'allprojects': None}\n"
+     ]
+    }
+   ],
+   "source": [
+    "for i in collection.aggregate([\n",
+    "\n",
+    "    { \"$group\": { \"_id\": None, \"allprojects\": { \"$avg\": \"$project\" } } }\n",
+    "    ]):\n",
+    "    print(i)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 92,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Öğrenci Adı: fatih\n",
+      "Python Ortalaması : 95.2\n",
+      "javascript Ortalaması : 75.6\n",
+      "c# Ortalaması : 68.2\n",
+      "85.4\n",
+      "------------------------\n",
+      "Öğrenci Adı: ahmet\n",
+      "Python Ortalaması : 85.4\n",
+      "javascript Ortalaması : 85.6\n",
+      "c# Ortalaması : 72.2\n",
+      "85.5\n",
+      "------------------------\n",
+      "Öğrenci Adı: fatih\n",
+      "Python Ortalaması : None\n",
+      "javascript Ortalaması : None\n",
+      "c# Ortalaması : None\n"
+     ]
+    },
+    {
+     "ename": "TypeError",
+     "evalue": "unsupported operand type(s) for +: 'NoneType' and 'NoneType'",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[1;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[1;31mTypeError\u001b[0m                                 Traceback (most recent call last)",
+      "Cell \u001b[1;32mIn[92], line 23\u001b[0m\n\u001b[0;32m     20\u001b[0m \u001b[39mprint\u001b[39m(\u001b[39m\"\u001b[39m\u001b[39mc# Ortalaması :\u001b[39m\u001b[39m\"\u001b[39m, result[\u001b[39m\"\u001b[39m\u001b[39mc#_ortalama\u001b[39m\u001b[39m\"\u001b[39m])\n\u001b[0;32m     21\u001b[0m \u001b[39m# print(\"genel ortalama :\", result[\"genel_ortalama\"])\u001b[39;00m\n\u001b[0;32m     22\u001b[0m \u001b[39m# print(result[\"python_ortalama\"]+ result[\"javascript_ortalama\"]+ result[\"c#_ortalama\"])\u001b[39;00m\n\u001b[1;32m---> 23\u001b[0m \u001b[39mprint\u001b[39m((result[\u001b[39m\"\u001b[39;49m\u001b[39mpython_ortalama\u001b[39;49m\u001b[39m\"\u001b[39;49m]\u001b[39m+\u001b[39;49m result[\u001b[39m\"\u001b[39;49m\u001b[39mjavascript_ortalama\u001b[39;49m\u001b[39m\"\u001b[39;49m])\u001b[39m/\u001b[39m\u001b[39m2\u001b[39m)\n\u001b[0;32m     24\u001b[0m \u001b[39mprint\u001b[39m(\u001b[39m\"\u001b[39m\u001b[39m------------------------\u001b[39m\u001b[39m\"\u001b[39m)\n",
+      "\u001b[1;31mTypeError\u001b[0m: unsupported operand type(s) for +: 'NoneType' and 'NoneType'"
+     ]
+    }
+   ],
+   "source": [
+    "average_scores_query = collection.aggregate([\n",
+    "    {\n",
+    "        \"$project\": {\n",
+    "            \"_id\": 0,\n",
+    "            \"name\": 1,\n",
+    "            \"python_ortalama\": { \"$avg\": \"$project.python\" },\n",
+    "            \"javascript_ortalama\": { \"$avg\": \"$project.javascript\" },\n",
+    "            \"c#_ortalama\": { \"$avg\": \"$project.c#\" }\n",
+    "            # \"genel_ortalama\": { \"$avg\": {\"project.python\", \"project.javascript\"}}\n",
+    "\n",
+    "            \n",
+    "        }\n",
+    "    }\n",
+    "])\n",
+    "\n",
+    "for result in average_scores_query:\n",
+    "    print(\"Öğrenci Adı:\", result[\"name\"])\n",
+    "    print(\"Python Ortalaması :\", result[\"python_ortalama\"])\n",
+    "    print(\"javascript Ortalaması :\", result[\"javascript_ortalama\"])\n",
+    "    print(\"c# Ortalaması :\", result[\"c#_ortalama\"])\n",
+    "    # print(\"genel ortalama :\", result[\"genel_ortalama\"])\n",
+    "    # print(result[\"python_ortalama\"]+ result[\"javascript_ortalama\"]+ result[\"c#_ortalama\"])\n",
+    "    print((result[\"python_ortalama\"]+ result[\"javascript_ortalama\"])/2)\n",
+    "    print(\"------------------------\")"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.1"
+  },
+  "orig_nbformat": 4
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
